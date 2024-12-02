@@ -36,7 +36,7 @@ def assignment_board() -> np.ndarray:
 
 def test_winner(player_one_winning_board):
     g = GameState(init_board=player_one_winning_board)
-    assert g.is_terminal() == Players.player_1
+    assert g.is_terminal() == Players.green
 
 
 def test_non_terminal_state(assignment_board):
@@ -49,4 +49,4 @@ def test_make_move(assignment_board):
     for i in range(3):
         g.make_move(4)
 
-    assert g.is_terminal() == Players.player_1
+    assert g.is_terminal() == Players.green

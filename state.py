@@ -3,22 +3,24 @@ from enum import Enum
 
 
 class Players(Enum):
-    player_1 = 1
-    player_2 = -1
+    green = 1
+    black = -1
 
 
 class GameState:
     """A class to represent a 4 connect"""
 
     def __init__(self, init_board: np.ndarray | None = None):
-
         self.board: np.ndarray = (
-            init_board if init_board.any() else np.zeros((6, 7), dtype=int)
+            init_board if init_board else np.zeros((6, 7), dtype=int)
         )
         self.current_player: int = 1
 
     def get_legal_moves(self) -> list[int]:
         return [col for col in range(7) if self.board[0, col] == 0]
+    
+    def check_legal_move(self, col: int) -> bool:
+        return col >= 0 and col < 7 and self.board[0, col] == 0
 
     def make_move(self, col: int):
         """Play a turn and switch player.
@@ -34,7 +36,7 @@ class GameState:
     def is_terminal(self) -> Players | bool:
         """Check if game is over.
 
-        Returns: False if game is ongoing, True for Draw, or a wining player.
+        Returns: False if game is ongoing, True for Draw, or a winning player.
         """
         return self._check_winner() or len(self.get_legal_moves()) == 0
 
