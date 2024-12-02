@@ -43,6 +43,7 @@ def test_non_terminal_state(assignment_board):
     g = GameState(init_board=assignment_board)
     assert g.is_terminal() == False
 
+
 def test_make_move(assignment_board):
     g = GameState(init_board=assignment_board)
 

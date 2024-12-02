@@ -12,13 +12,13 @@ class GameState:
 
     def __init__(self, init_board: np.ndarray | None = None):
         self.board: np.ndarray = (
-            init_board if init_board else np.zeros((6, 7), dtype=int)
+            init_board if isinstance(init_board, np.ndarray) else np.zeros((6, 7), dtype=int)
         )
         self.current_player: int = 1
 
     def get_legal_moves(self) -> list[int]:
         return [col for col in range(7) if self.board[0, col] == 0]
-    
+
     def check_legal_move(self, col: int) -> bool:
         return col >= 0 and col < 7 and self.board[0, col] == 0
 

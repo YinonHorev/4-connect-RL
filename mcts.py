@@ -5,6 +5,7 @@ import numpy as np
 import math
 import random
 
+
 def play():
     state = GameState()
     state.render()
@@ -22,6 +23,7 @@ def play():
         state.render()
     print(f"Player {winner} wins!")
 
+
 def assignment_board() -> np.ndarray:
     board = np.asarray(
         [
@@ -35,10 +37,11 @@ def assignment_board() -> np.ndarray:
     )
     return board
 
+
 def mcts(state: GameState, n_simulations: int):
-    '''
+    """
     Monte Carlo Tree Search algorithm
-    '''
+    """
     root = Node(state, None, None)
     for _ in range(n_simulations):
         # Select nodes recursively until a leaf node is reached
@@ -58,14 +61,16 @@ def mcts(state: GameState, n_simulations: int):
         leaf = backtrack(leaf, reward)
     return root.best_child().state
 
+
 def select(root: Node):
-    '''
+    """
     Select the most promising leaf based on UCB formula
-    '''
+    """
     curr_node = root
     while curr_node.children:
         curr_node = Node.best_child()
     return curr_node
+
 
 def simulate(node: Node):
     temp_state = node.state.clone()
@@ -74,14 +79,16 @@ def simulate(node: Node):
         temp_state.make_move(move)
     return get_reward(winner)
 
+
 def backtrack(node: Node, reward: int):
-    '''
+    """
     Update value and visits for states expanded in selection and expansion
-    '''
+    """
     while node := node.state.parent:
         node.simulations += 1
         node.wins += reward
     return node
+
 
 def get_reward(winner: int):
     if winner == True:
@@ -90,6 +97,7 @@ def get_reward(winner: int):
         return 1
     else:
         return -1
-    
+
+
 if __name__ == "__main__":
     play()

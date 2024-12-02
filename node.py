@@ -3,6 +3,7 @@ import math
 
 EXPLOR_PAR = math.sqrt(2)
 
+
 class Node:
     def __init__(self, state: GameState, parent: "Node", move: int):
         self.state = state
@@ -20,7 +21,9 @@ class Node:
         return max(self.children, key=lambda x: x.ucb())
 
     def ucb(self):
-        return self.wins / self.simulations + EXPLOR_PAR * math.sqrt(math.log(self.parent.simulations) / self.simulations)
+        return self.wins / self.simulations + EXPLOR_PAR * math.sqrt(
+            math.log(self.parent.simulations) / self.simulations
+        )
 
     def add_children(self):
         legal_moves = self.state.get_legal_moves()
