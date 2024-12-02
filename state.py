@@ -12,7 +12,9 @@ class GameState:
 
     def __init__(self, init_board: np.ndarray | None = None):
         self.board: np.ndarray = (
-            init_board if isinstance(init_board, np.ndarray) else np.zeros((6, 7), dtype=int)
+            init_board
+            if isinstance(init_board, np.ndarray)
+            else np.zeros((6, 7), dtype=int)
         )
         self.current_player: int = 1
 

@@ -12,14 +12,13 @@ def play():
 
     while not (winner := state.is_terminal()):
         # move = int(input(f"Player {state.current_player}, enter a move: "))
-        if state.current_player == Players.green:
-            move = mcts(state, 1000)
+        if state.current_player == Players.green.value:
+            state = mcts(state, 100)
+            if winner := state.is_terminal():
+                break
         else:
             move = random.choice(state.get_legal_moves())
-        # if not state.check_legal_move(move):
-        #     print("Invalid move")
-        #     continue
-        state.make_move(move)
+            state.make_move(move)
         state.render()
     print(f"Player {winner} wins!")
 
@@ -38,17 +37,17 @@ def assignment_board() -> np.ndarray:
     return board
 
 
-def mcts(state: GameState, n_simulations: int):
+def mcts(state: GameState, n_simulations: int) -> GameState:
     """
     Monte Carlo Tree Search algorithm
     """
-    root = Node(state, None, None)
-    for _ in range(n_simulations):
+    root = Node(state, None)
+    for i in range(n_simulations):
         # Select nodes recursively until a leaf node is reached
         leaf = select(root)
         if winner := leaf.state.is_terminal():
             reward = get_reward(winner)
-            backtrack(leaf, reward)
+            leaf = backtrack(leaf, reward)
             continue
 
         # Expand the leaf node
@@ -68,7 +67,7 @@ def select(root: Node):
     """
     curr_node = root
     while curr_node.children:
-        curr_node = Node.best_child()
+        curr_node = curr_node.best_child()
     return curr_node
 
 
@@ -84,13 +83,13 @@ def backtrack(node: Node, reward: int):
     """
     Update value and visits for states expanded in selection and expansion
     """
-    while node := node.state.parent:
+    while node := node.parent:
         node.simulations += 1
         node.wins += reward
     return node
 
 
-def get_reward(winner: int):
+def get_reward(winner: Players | bool) -> int:
     if winner == True:
         return 0
     elif winner == Players.green:
