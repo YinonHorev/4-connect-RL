@@ -2,7 +2,7 @@ from state import GameState
 import math
 
 
-EXPLOR_PAR = math.sqrt(2)
+EXPLOR_PAR = 1.3
 
 
 class Node:

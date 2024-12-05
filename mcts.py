@@ -1,9 +1,19 @@
+from audioop import avg
 from state import GameState
 from state import Players
 from node import Node
 import numpy as np
 import math
 import random
+from collections import defaultdict
+
+def play_a_lot():
+    res = defaultdict(int)
+    for i in range(50):
+        print(i)
+        res[play()] += 1
+        print(res)
+
 
 
 def play():
@@ -12,21 +22,24 @@ def play():
     Player green uses the MCTS algorithm to determine the best move.
     Player black chooses a random move.
     """
-    state = GameState()
+    state = GameState(assignment_board())
     state.render()
 
     while not (winner := state.is_terminal()):
         if state.current_player == Players.green.value:
-            move = mcts(state, 1000)
+            move = mcts(state, 10_000)
         else:
             move = random.choice(state.get_legal_moves())
-        print(f"Player {state.current_player} chooses column {move}")
+        # print(f"Player {state.current_player} chooses column {move}")
         state.make_move(move)
-        state.render()
+        # state.render()
 
     if winner == True:
         print("Draw!")
     print(f"Player {winner} wins!")
+    print(state)
+
+    return winner
 
 
 def assignment_board() -> np.ndarray:
@@ -42,14 +55,31 @@ def assignment_board() -> np.ndarray:
     )
     return board
 
+def tipping_point():
+    board = np.asarray(
+        [
+            [-1, -1, -1, 1, 0, 1, 0],
+            [-1, 1, 1, 1, 0, -1, 0],
+            [1, -1, -1, -1, 0, 1, 0],
+            [-1, 1, 1, 1, 0, -1, 0],
+            [1, 1, 1, -1, -1, -1, 0],
+            [-1, -1, 1, -1, 1, 1, 0],
+        ]
+    )
+    return board
 
 def mcts(state: GameState, n_simulations: int):
     """Determine the best move using the Monte Carlo Tree Search algorithm."""
     root = Node(state, None, None)
-    for _ in range(n_simulations):
+    diff_res = []
+    diff = 0
+    for i in range(n_simulations):
         # Select nodes recursively until a leaf node is reached
         leaf = select(root)
         if winner := leaf.state.is_terminal():
+            # print(i)
+            diff_res.append(i-diff)
+            diff = i
             reward = get_reward(winner)
             backtrack(leaf, reward)
             continue
@@ -63,8 +93,12 @@ def mcts(state: GameState, n_simulations: int):
         # Backtrack the result of the simulation
         leaf = backtrack(leaf, reward)
 
-    best_move, _ = root.best_child()
-    return best_move
+    # best_move, _ = root.best_child()
+    best_move_child = max(root.children.items(), key=lambda c: c[1].wins / c[1].simulations)
+
+    if len(diff_res):
+        print(sum(diff_res) / len(diff_res))
+    return best_move_child[0]
 
 
 def select(root: Node) -> Node:
@@ -95,7 +129,7 @@ def backtrack(node: Node, reward: int) -> Node:
 def get_reward(winner: int) -> int:
     """Return the reward for the simulation."""
     if winner == True:
-        return 0
+        return -1
     elif winner == Players.green:
         return 1
     else:
@@ -103,4 +137,4 @@ def get_reward(winner: int) -> int:
 
 
 if __name__ == "__main__":
-    play()
+    play_a_lot()
