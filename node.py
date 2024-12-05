@@ -4,6 +4,7 @@ import math
 
 EXPLOR_PAR = math.sqrt(2)
 
+
 class Node:
     def __init__(self, state: GameState, parent: "Node", move: int):
         self.state = state
@@ -16,18 +17,17 @@ class Node:
             parent.children[move] = self
 
     def best_child(self) -> tuple[int, "Node"]:
-        '''Return the move and corresponding child node with the highest UCB value.'''
+        """Return the move and corresponding child node with the highest UCB value."""
         for move, child in self.children.items():
             if child.simulations == 0:
                 return move, child
         max_move, max_child = max(
-            self.children.items(),
-            key=lambda item: item[1]._ucb()
+            self.children.items(), key=lambda item: item[1]._ucb()
         )
         return max_move, max_child
 
     def add_children(self):
-        '''Add all legal next moves as children to the node.'''
+        """Add all legal next moves as children to the node."""
         legal_moves = self.state.get_legal_moves()
         if not legal_moves:
             raise ValueError("No legal moves")
@@ -37,12 +37,12 @@ class Node:
             self.children[move] = Node(new_state, self, move)
 
     def update(self, result):
-        '''Update the win and simulation count of the node, based on the result of the simulation.'''
+        """Update the win and simulation count of the node, based on the result of the simulation."""
         self.simulations += 1
         self.wins += result
 
     def _ucb(self) -> float:
-        '''Calculate the Upper Confidence Bound of the node.'''
+        """Calculate the Upper Confidence Bound of the node."""
         return self._exploitation() + self._exploration()
 
     def _exploitation(self) -> float:
